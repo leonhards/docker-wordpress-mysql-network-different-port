@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+  db_tbworks:
+    image: mysql:5.7
+    container_name: db_tbworks
+    restart: always
+    ports:
+      - 3309:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tbworks
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    volumes:
+      - ./db:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    container_name: tobaworks
+    restart: always
+    ports:
+      - 8090:80
+    environment:
+      VIRTUAL_HOST: tobaworks.local
+      VIRTUAL_PORT: 80
+      WORDPRESS_DB_HOST: db_tbworks:3306
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: admin
+      WORDPRESS_DB_NAME: tbworks
+      WORDPRESS_TABLE_PREFIX: tbw_
+    volumes:
+      - ./wordpress:/var/www/html
+
+volumes:
+  db:
+  wordpress:
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
